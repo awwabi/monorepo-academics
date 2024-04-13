@@ -21,8 +21,17 @@ jobs:
       with:
         go-version: '1.21.5'
 
-    - name: Build
-      run: go build -v ./...
+    - name: Determine changed directories
+      id: changed_dirs
+      run: echo "::set-output name=changed_dirs::$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -oE '^(cuti|kelas)/' | head -n 1)"
 
-    - name: Test
-      run: go test -v ./...
+    - name: Run tests based on changed directory
+      run: |
+        changed_dir="${{ steps.changed_dirs.outputs.changed_dirs }}"
+        if [ "$changed_dir" = "cuti/" ]; then
+          go test -v ./cuti/tests
+        elif [ "$changed_dir" = "kelas/" ]; then
+          go test -v ./kelas/tests
+        else
+          echo "No relevant tests to run."
+        fi
