@@ -8,5 +8,7 @@ import (
 
 func TestHello(t *testing.T) {
 	t.Log("Hello")
-	assert.True(t, true)
+
+	word := "Hello"
+	assert.Equal(t, "Hello", word)
 }
