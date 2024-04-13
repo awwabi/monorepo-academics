@@ -1,19 +1,17 @@
 package internal
 
 import (
-	"github.com/awwabi/monorepo-academics/cuti/internal/configs"
+	"database/sql"
+
 	"github.com/awwabi/monorepo-academics/cuti/internal/handlers"
 	"github.com/awwabi/monorepo-academics/cuti/internal/repositories"
 	"github.com/awwabi/monorepo-academics/cuti/internal/services"
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterRoutes(engine *gin.Engine) *gin.Engine {
-	// Load configurations
-	cfg := configs.LoadConfig()
-
+func RegisterRoutes(engine *gin.Engine, db *sql.DB) {
 	// Initialize repositories
-	userRepo := repositories.NewUserRepository(cfg)
+	userRepo := repositories.NewUserRepository(db)
 
 	// Initialize services
 	userService := services.NewUserService(*userRepo)
@@ -26,6 +24,4 @@ func RegisterRoutes(engine *gin.Engine) *gin.Engine {
 
 	// Routes
 	api.GET("/", userHandler.SayHello)
-
-	return engine
 }

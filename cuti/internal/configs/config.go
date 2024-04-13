@@ -1,6 +1,8 @@
 package configs
 
 import (
+	"database/sql"
+	"fmt"
 	"log"
 	"os"
 
@@ -24,7 +26,7 @@ func Init() {
 	log.Println("Environment variables loaded successfully")
 }
 
-func LoadConfig() *Config {
+func InitDB() *sql.DB {
 	// Read environment variables
 	cfg := &Config{
 		DBHost:     os.Getenv("DB_HOST"),
@@ -34,5 +36,22 @@ func LoadConfig() *Config {
 		DBName:     os.Getenv("DB_NAME"),
 	}
 
-	return cfg
+	// Create PostgreSQL connection string
+	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		cfg.DBHost, cfg.DBPort, cfg.DBUser, cfg.DBPassword, cfg.DBName)
+
+	// Connect to PostgreSQL
+	db, err := sql.Open("postgres", connStr)
+	if err != nil {
+		log.Fatalf("Error connecting to the database: %v", err)
+	}
+
+	// Check if the connection is successful
+	if err = db.Ping(); err != nil {
+		log.Fatalf("Error pinging the database: %v", err)
+	}
+
+	log.Println("Connected to the database")
+
+	return db
 }

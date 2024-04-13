@@ -8,11 +8,12 @@ import (
 
 func main() {
 	configs.Init()
+	db := configs.InitDB()
 
 	// Initialize Gin router
 	r := gin.Default()
 
-	internal.RegisterRoutes(r)
+	internal.RegisterRoutes(r, db)
 
 	// Run the server
 	r.Run(":8080")

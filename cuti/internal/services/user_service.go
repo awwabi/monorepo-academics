@@ -9,5 +9,3 @@ type UserService struct {
 func NewUserService(userRepo repositories.UserRepository) *UserService {
 	return &UserService{userRepo}
 }
-
-// Implement service methods here
