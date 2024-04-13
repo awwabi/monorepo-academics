@@ -1,0 +1,36 @@
+# This is a basic workflow that is manually triggered
+
+name: Manual workflow
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+on:
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+   build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21.5'
+
+    - name: Determine changed directories
+      id: changed_dirs
+      run: |
+        changed_files="$(git diff-tree --no-commit-id --name-only ${{ github.event.before }} ${{ github.sha }})"
+        changed_dir=$(echo "$changed_files" | grep -oE '^[^/]+/' | head -n 1 | sed 's#/##')
+        echo "changed_dir=$changed_dir" >> $GITHUB_OUTPUT
+
+    - name: Run tests based on changed directory
+      run: |
+        changed_dir="${{ steps.changed_dirs.outputs.changed_dir }}"
+        if [ -n "$changed_dir" ]; then
+          go test -v ./$changed_dir/tests
+        else
+          echo "No relevant tests to run."
+        fi
