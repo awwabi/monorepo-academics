@@ -24,7 +24,7 @@ jobs:
     - name: Determine changed directories
       id: changed_dirs
       run: |
-        changed_files="$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})"
+        changed_files="$(git diff-tree --no-commit-id --name-only ${{ github.event.before }} ${{ github.sha }})"
         changed_dir=$(echo "$changed_files" | grep -oE '^[^/]+/' | head -n 1 | sed 's#/##')
         echo "changed_dir=$changed_dir" >> $GITHUB_OUTPUT
 
